@@ -1,0 +1,7 @@
+*.out
+*.log
+*.aux
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+Assignment 1/figures/*

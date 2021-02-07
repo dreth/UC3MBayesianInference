@@ -1,0 +1,439 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdftitle={Practice 0: Naïve Bayes},
+            pdfauthor={Javier Esteban Aragoneses, Mauricio Marcos, Danyu Zhang, Daniel Alonso},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\title{Practice 0: Naïve Bayes}
+\author{Javier Esteban Aragoneses, Mauricio Marcos, Danyu Zhang, Daniel Alonso}
+\date{February 7th, 2021}
+
+\begin{document}
+\maketitle
+
+\hypertarget{dataset-selection}{%
+\section{Dataset selection}\label{dataset-selection}}
+
+In this Project, we will use a database obtained from the World Bank
+Databank, specifically the World Development Indicators database. It
+consists of economics, education, energy use and population specific
+information. So, in this case, our goal is to predict, using demographic
+variables, a development measure called ``Human Development Index''
+(from now on, ``HDI'').
+
+We have selected a country list dataset where we predict HDI category
+per country for this assignment. We replace \emph{very high} and
+\emph{high} HDI with only the tag \textbf{high}. We apply the same
+treatment to \emph{medium} and \emph{low} HDI with only the tag
+\textbf{low}. This simplifies the analysis greatly, and improves
+accuracy.
+
+Our target variable here will be \emph{hdi\_cat}.
+
+Variables:
+
+We have \#\# number of features in our dataset, each one expresses the
+following:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{foreign\_inv\_inflows}: Foreign direct investment, net inflows
+  (BoP, current US)
+\item
+  \textbf{exports\_perc\_gdp}: Exports of goods and services (as a \% of
+  GDP)
+\item
+  \textbf{inflation\_perc}: Inflation, consumer prices (annual \%)
+\item
+  \textbf{education\_years}: Compulsory education, duration (years)
+\item
+  \textbf{education\_perc\_gdp}: Government expenditure on education,
+  total (as a \% of GDP)
+\item
+  \textbf{gds\_perc\_gdp}: Gross domestic savings (as a \% of GDP)
+\item
+  \textbf{gross\_savings\_perc\_gdp}: Gross savings (as a \% of GDP)
+\item
+  \textbf{int\_tourism\_arrivals}: International tourism, number of
+  arrivals
+\item
+  \textbf{int\_tourism\_receipts}: International tourism, receipts (in
+  current US)
+\item
+  \textbf{perc\_internet\_users}: Individuals using the Internet (as a
+  \% of population)
+\item
+  \textbf{access\_to\_electricity}: Access to electricity (\% of
+  population)
+\item
+  \textbf{agricultural\_land}: Agricultural land (\% of land area)
+\item
+  \textbf{birth\_rate}: Birth rate, crude (per 1,000 people)
+\item
+  \textbf{gne}: Gross national expenditure (\% of GDP)
+\item
+  \textbf{mobile\_subscriptions}: Mobile cellular subscriptions (per 100
+  people)
+\item
+  \textbf{infant\_mort\_rate}: Mortality rate, infant (per 1,000 live
+  births)
+\item
+  \textbf{sex\_ratio}: Sex ratio at birth (male births per female
+  births)
+\item
+  \textbf{greenhouse\_gas\_em}: Total greenhouse gas emissions (kt of
+  CO2 equivalent)
+\item
+  \textbf{urban\_pop\_perc}: Urban population (\% of total population)
+\end{itemize}
+
+\hypertarget{train-test-split}{%
+\section{Train-Test split}\label{train-test-split}}
+
+We create a train-test split with 70\% train and 30\% test.
+
+\newpage
+
+\hypertarget{creating-a-nauxefve-bayes-model}{%
+\section{Creating a Naïve Bayes
+model}\label{creating-a-nauxefve-bayes-model}}
+
+In this case, we will use the Naïve Bayes Classificator, to predict
+weather a country will be in the group of \emph{very high}, \emph{high},
+\emph{medium} or \emph{low} HDI.
+
+The Naïve Bayes is sometimes a good model to predict a classification
+through the study of features, as it takes into account prior
+probabilities, to estimate the prediction. So first, the algorithm will
+find the prior probabilities (given by the percentaje of each category
+in the training sample set) and then will calculate the likelihoods,
+using the Bayes Rule. But when doing so, it is making two big
+assumptions that may arise in problems later:
+
+\begin{itemize}
+\tightlist
+\item
+  The effect of the value of a predictor (or features) on a given class
+  (high or low HDI) is independent of the values of other predictors.
+\item
+  Each feature makes an equal contribution to the outcome.
+\end{itemize}
+
+This is why, after calculating every conditional probability given each
+feature value, it multiplies all the probabilities to find the final
+probability of each observation for each category.
+
+In other words, according to our first assumption the percentage of
+urban population in a country is independent from the life expectancy of
+the country in a given class, and the total greenhouse gas emissions is
+also independent from both of them. Then, our second assumptions says
+that none of the features is meaningless to predict our categories, and
+that all of them gives equal contribution to the predictions. We will
+see that this is not the case.
+
+Finally, the algorithm will calculate the probability of being of a
+specific category and then will create a classifier. For this, we find
+the probability of given set of inputs for all possible values of the
+class variable (very high, high, medium, low, very low) and pick up the
+output with the maximum probability.
+
+As we can see, the model takes as prior probabilities for each
+cateogory, the percentaje of observations from the training set of each
+category. In this case, we have that prior probability of being ``low
+HDI'': 0.398 and the prior probability of a ``high HDI'' is 0.602. Then,
+it calculates the frequencies for each attribute against the target, and
+then the likelihoods in a table. In this case the likelihood is the
+probability of the predictor given a specific class. And then, it
+calculates the posterior probabilities.
+
+\hypertarget{predicting-hdi-category}{%
+\section{Predicting HDI category}\label{predicting-hdi-category}}
+
+Performing the prediction:
+
+Calculating a confidence interval for each prediction:
+
+Confusion matrix with results:
+
+\tiny
+
+\begin{verbatim}
+#>           Reference
+#> Prediction high low
+#>       high   23   0
+#>       low     7  26
+\end{verbatim}
+
+\normalsize
+
+The following result yields a model with 85.71\% accuracy. The model is
+overall quite accurate given the small size of the training set in terms
+of total amount of observations. The specificity and sensitivity are
+both quite decent as well, hovering \textasciitilde{}85\%.
+
+\newpage
+
+\hypertarget{predictive-power-per-variable}{%
+\section{Predictive power per
+variable}\label{predictive-power-per-variable}}
+
+We only plot the variables that show most strength when predicting:
+
+\includegraphics{./figures/unnamed-chunk-8-1.pdf}
+
+\hypertarget{variables-that-classify-the-best}{%
+\subsection{Variables that classify the
+best}\label{variables-that-classify-the-best}}
+
+Now, we can plot each variable kernel density, distinguishing the
+categories, to see which variables are the most helpful at predicting
+each HDI category.
+
+In other words, we can inspect every plot and see what variables behave
+differently for each category and thus, will be more helpful predicting
+the category of the observations.
+
+The following are the variables that most help us in categorizing:
+
+\begin{verbatim}
+#> [1] "foreign_inv_inflows"   "int_tourism_arrivals"  "int_tourism_receipts" 
+#> [4] "perc_internet_users"   "access_to_electricity" "birth_rate"           
+#> [7] "mobile_subscriptions"  "infant_mort_rate"      "urban_pop_perc"
+\end{verbatim}
+
+For example, we can clearly see that ``access to electricity'' is a
+feature that really helps us in distinguishing between the categories.
+In general, we could say that countries with a low percentage of the
+population with access to electricity are more inclined to be
+categorized as a low HDI country, while if an observation (a country)
+has a large percentage of ``access to electricity'' it is more inclined
+to be categorized as a high HDI country.
+
+On the other hand, the variable ``birth\_rate'' is also important, but
+in a different direction: if the country presents a low birth\_rate it
+is more inclined to be categorized as high HDI, while a high
+``birth\_rate'' presented by a country is a sign of inclination towards
+a low HDI country.
+
+\hypertarget{critics}{%
+\subsection{Critics}\label{critics}}
+
+As we can see from our description of the model, the two assumptions we
+take are obviously not correct in the case of our features.
+
+First, our features are not independent one from the other, meaning that
+there is some kind of dependancy between them. It is pretty obvious that
+the demographic and economical factors of a country are in some way
+dependant one from the other. For example, we can think that a country
+with a high infant mortality will probably have a low level of
+education, or in a country with a lot of inflation there will not be
+very high levels of savings (as the savings would lose value with time
+if the inflation persists).
+
+Second, as we just showed with the plots explantions there are some
+variables that clearly have a much bigger impact that others in
+differentiationg the categories of our response variable. In other
+words: we can say that the birth rate of a country contributes more to
+predict wether this country is of low or high HDI than, for instance,
+the agricultural land.
+
+\newpage
+
+\hypertarget{appendix-code}{%
+\section{Appendix: Code}\label{appendix-code}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# importing libraries}
+\KeywordTok{library}\NormalTok{(MASS)}
+\KeywordTok{library}\NormalTok{(dplyr)}
+\KeywordTok{library}\NormalTok{(e1071)}
+\KeywordTok{library}\NormalTok{(mlbench)}
+\KeywordTok{library}\NormalTok{(caret)}
+
+\CommentTok{# reading the data into a dataframe}
+\NormalTok{data <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{'./data/data.csv'}\NormalTok{)}
+
+\CommentTok{# removing columns that aren't useful}
+\NormalTok{data <-}\StringTok{ }\NormalTok{data[}\KeywordTok{names}\NormalTok{(data) }\OperatorTok{!=}\StringTok{ "hdi"} \OperatorTok{&}\StringTok{ }
+\StringTok{             }\KeywordTok{names}\NormalTok{(data) }\OperatorTok{!=}\StringTok{ "X"} \OperatorTok{&}\StringTok{ }
+\StringTok{             }\KeywordTok{names}\NormalTok{(data) }\OperatorTok{!=}\StringTok{ "country_name"} \OperatorTok{&}\StringTok{ }
+\StringTok{             }\KeywordTok{names}\NormalTok{(data) }\OperatorTok{!=}\StringTok{ "country_code"} \OperatorTok{&}\StringTok{ }
+\StringTok{             }\KeywordTok{names}\NormalTok{(data) }\OperatorTok{!=}\StringTok{ "year_code"} \OperatorTok{&}\StringTok{ }
+\StringTok{             }\KeywordTok{names}\NormalTok{(data) }\OperatorTok{!=}\StringTok{ "year"}\NormalTok{]}
+
+\CommentTok{# changing the very high, medium categories to }
+\CommentTok{# high and low respectively}
+\NormalTok{cat <-}\StringTok{ }\KeywordTok{c}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(data}\OperatorTok{$}\NormalTok{hdi_cat)) \{}
+    \ControlFlowTok{if}\NormalTok{ (data}\OperatorTok{$}\NormalTok{hdi_cat[i] }\OperatorTok{==}\StringTok{ "very high"}\NormalTok{) \{}
+\NormalTok{        cat <-}\StringTok{ }\KeywordTok{c}\NormalTok{(cat, }\StringTok{"high"}\NormalTok{)}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (data}\OperatorTok{$}\NormalTok{hdi_cat[i] }\OperatorTok{==}\StringTok{ "medium"}\NormalTok{) \{}
+\NormalTok{        cat <-}\StringTok{ }\KeywordTok{c}\NormalTok{(cat, }\StringTok{"low"}\NormalTok{)}
+\NormalTok{    \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{        cat <-}\StringTok{ }\KeywordTok{c}\NormalTok{(cat, data}\OperatorTok{$}\NormalTok{hdi_cat[i])}
+\NormalTok{    \}}
+\NormalTok{\}}
+
+\CommentTok{# replacing the original hdi_cat col with}
+\CommentTok{# the modified version}
+\NormalTok{data}\OperatorTok{$}\NormalTok{hdi_cat <-}\StringTok{ }\NormalTok{cat}
+
+\CommentTok{# train-test split}
+\NormalTok{n=}\KeywordTok{nrow}\NormalTok{(data)}
+\NormalTok{trainset=(}\DecValTok{1}\OperatorTok{:}\NormalTok{n)}\OperatorTok{%in%}\KeywordTok{sample}\NormalTok{(n,}\KeywordTok{floor}\NormalTok{(n}\OperatorTok{*}\FloatTok{0.7}\NormalTok{)) }
+\NormalTok{testset=}\OperatorTok{!}\NormalTok{trainset }
+
+\CommentTok{# naive bayes model}
+\NormalTok{model <-}\StringTok{ }\KeywordTok{naiveBayes}\NormalTok{(hdi_cat }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data =}\NormalTok{ data,}\DataTypeTok{subset =}\NormalTok{ trainset)}
+
+\CommentTok{# predict and classification of probabilities}
+\NormalTok{pred =}\StringTok{ }\KeywordTok{predict}\NormalTok{(model,data[testset,],}\DataTypeTok{type=}\StringTok{"raw"}\NormalTok{)}
+\NormalTok{pred_cat <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(pred[,}\DecValTok{1}\NormalTok{] }\OperatorTok{>}\StringTok{ }\FloatTok{0.9}\NormalTok{, }\StringTok{"high"}\NormalTok{, }\StringTok{"low"}\NormalTok{)}
+
+\CommentTok{# adding 2 columns to the prediction table}
+\CommentTok{# to create a confidence interval for each}
+\CommentTok{# prediction}
+\NormalTok{num_highs <-}\StringTok{ }\KeywordTok{table}\NormalTok{(pred_cat)[}\DecValTok{1}\NormalTok{]}
+\NormalTok{pred <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(pred, }\KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{56}\NormalTok{))}
+\NormalTok{pred <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(pred, }\KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{56}\NormalTok{))}
+\KeywordTok{colnames}\NormalTok{(pred) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"high"}\NormalTok{,}\StringTok{"low"}\NormalTok{,}\StringTok{"low_CI"}\NormalTok{, }\StringTok{"high_CI"}\NormalTok{)}
+
+\CommentTok{# performing the CI calculation}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(pred_cat)) \{}
+\NormalTok{    p <-}\StringTok{ }\NormalTok{pred[i,}\DecValTok{1}\NormalTok{]}
+\NormalTok{    val <-}\StringTok{ }\KeywordTok{qnorm}\NormalTok{(}\FloatTok{0.975}\NormalTok{)}\OperatorTok{*}\KeywordTok{sqrt}\NormalTok{((p}\OperatorTok{*}\NormalTok{(}\DecValTok{1}\OperatorTok{-}\NormalTok{p))}\OperatorTok{/}\NormalTok{num_highs)}
+\NormalTok{    pred[i,}\DecValTok{3}\NormalTok{] =}\StringTok{ }\NormalTok{p}\OperatorTok{-}\NormalTok{val}
+\NormalTok{    pred[i,}\DecValTok{4}\NormalTok{] =}\StringTok{ }\NormalTok{p}\OperatorTok{+}\NormalTok{val}
+\NormalTok{\}}
+
+\CommentTok{# converting the columns to factors}
+\NormalTok{pred <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(pred_cat)}
+\NormalTok{data}\OperatorTok{$}\NormalTok{hdi_cat <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(data}\OperatorTok{$}\NormalTok{hdi_cat)}
+
+\CommentTok{# displaying a confusion matrix to assess model quality}
+\KeywordTok{confusionMatrix}\NormalTok{(pred, data}\OperatorTok{$}\NormalTok{hdi_cat[testset])}
+
+\CommentTok{# assessing the quality of each variable at predicting}
+\NormalTok{mms=}\KeywordTok{apply}\NormalTok{(data[}\DecValTok{1}\OperatorTok{:}\DecValTok{19}\NormalTok{],}\DecValTok{2}\NormalTok{,}\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{unlist}\NormalTok{(}\KeywordTok{by}\NormalTok{(x,data}\OperatorTok{$}\NormalTok{hdi_cat,mean)))}
+\NormalTok{sds=}\KeywordTok{apply}\NormalTok{(data[}\DecValTok{1}\OperatorTok{:}\DecValTok{19}\NormalTok{],}\DecValTok{2}\NormalTok{,}\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{unlist}\NormalTok{(}\KeywordTok{by}\NormalTok{(x,data}\OperatorTok{$}\NormalTok{hdi_cat,sd)))}
+
+\CommentTok{# plotting the kernel densities}
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\DecValTok{19}\NormalTok{)\{}
+\NormalTok{  rrx=}\KeywordTok{range}\NormalTok{(}\KeywordTok{c}\NormalTok{(mms[,i]}\OperatorTok{+}\DecValTok{3}\OperatorTok{*}\NormalTok{sds[,i],mms[,i]}\OperatorTok{-}\DecValTok{3}\OperatorTok{*}\NormalTok{sds[,i]))}
+\NormalTok{  rry=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\KeywordTok{max}\NormalTok{(}\KeywordTok{dnorm}\NormalTok{(mms[,i],mms[,i],sds[,i]}\OperatorTok{+}\FloatTok{0.0001}\NormalTok{)))}
+  \KeywordTok{plot}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DataTypeTok{type=}\StringTok{"n"}\NormalTok{,}\DataTypeTok{xlab=}\KeywordTok{colnames}\NormalTok{(mms)[i],}\DataTypeTok{ylab=}\StringTok{"Normal Density"}\NormalTok{,}\DataTypeTok{xlim=}\NormalTok{rrx,}\DataTypeTok{ylim=}\NormalTok{rry)}
+\NormalTok{  ss=}\KeywordTok{seq}\NormalTok{(rrx[}\DecValTok{1}\NormalTok{],rrx[}\DecValTok{2}\NormalTok{],}\DataTypeTok{length.out =} \DecValTok{100}\NormalTok{)}
+  \ControlFlowTok{for}\NormalTok{(j }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{) }\KeywordTok{points}\NormalTok{(ss,}\KeywordTok{dnorm}\NormalTok{(ss,mms[j,i],sds[j,i]),}\DataTypeTok{type=}\StringTok{"l"}\NormalTok{,}\DataTypeTok{col=}\NormalTok{j)}
+\NormalTok{\}}
+
+\CommentTok{# good columns, variables that are solid at predicting }
+\CommentTok{# HDI category}
+\NormalTok{good_cols <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"foreign_inv_inflows"}\NormalTok{, }\StringTok{"int_tourism_arrivals"}\NormalTok{, }\StringTok{"int_tourism_receipts"}\NormalTok{, }\StringTok{"perc_internet_users"}\NormalTok{, }\StringTok{"access_to_electricity"}\NormalTok{, }\StringTok{"birth_rate"}\NormalTok{, }\StringTok{"mobile_subscriptions"}\NormalTok{, }\StringTok{"infant_mort_rate"}\NormalTok{, }\StringTok{"urban_pop_perc"}\NormalTok{)}
+\NormalTok{good_cols}
+\end{Highlighting}
+\end{Shaded}
+
+\end{document}
