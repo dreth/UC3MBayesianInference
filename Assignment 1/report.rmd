@@ -146,7 +146,11 @@ cm$table
 
 \normalsize
 
-The following result yields a model with 85.71% accuracy. The model is overall quite accurate given the small size of the training set in terms of total amount of observations. The specificity and sensitivity are both quite decent as well, hovering ~85%.
+The following result yields a model with 80%+ accuracy. The model is overall quite accurate given the small size of the training set in terms of total amount of observations. The specificity and sensitivity are both quite decent as well.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+cm$overall
+```
 
 \newpage
 
@@ -199,7 +203,7 @@ Second, as we just showed with the plots explantions there are some variables th
 
 \newpage
 
-# Appendix: Code
+# Annex: Code
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
 # importing libraries
@@ -288,6 +292,10 @@ for(i in 1:19){
 
 # good columns, variables that are solid at predicting 
 # HDI category
-good_cols <- c("foreign_inv_inflows", "int_tourism_arrivals", "int_tourism_receipts", "perc_internet_users", "access_to_electricity", "birth_rate", "mobile_subscriptions", "infant_mort_rate", "urban_pop_perc")
+good_cols <- c("foreign_inv_inflows", "int_tourism_arrivals", 
+                "int_tourism_receipts", "perc_internet_users",
+                 "access_to_electricity", "birth_rate",
+                 "mobile_subscriptions", "infant_mort_rate",
+                 "urban_pop_perc")
 good_cols
 ```

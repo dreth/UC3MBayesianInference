@@ -261,16 +261,23 @@ Confusion matrix with results:
 \begin{verbatim}
 #>           Reference
 #> Prediction high low
-#>       high   23   0
-#>       low     7  26
+#>       high   36   1
+#>       low     3  16
 \end{verbatim}
 
 \normalsize
 
-The following result yields a model with 85.71\% accuracy. The model is
+The following result yields a model with 80\%+ accuracy. The model is
 overall quite accurate given the small size of the training set in terms
 of total amount of observations. The specificity and sensitivity are
-both quite decent as well, hovering \textasciitilde{}85\%.
+both quite decent as well.
+
+\begin{verbatim}
+#>       Accuracy          Kappa  AccuracyLower  AccuracyUpper   AccuracyNull 
+#>   9.285714e-01   8.364964e-01   8.270953e-01   9.801961e-01   6.964286e-01 
+#> AccuracyPValue  McnemarPValue 
+#>   2.522168e-05   6.170751e-01
+\end{verbatim}
 
 \newpage
 
@@ -280,7 +287,7 @@ variable}\label{predictive-power-per-variable}}
 
 We only plot the variables that show most strength when predicting:
 
-\includegraphics{./figures/unnamed-chunk-8-1.pdf}
+\includegraphics{./figures/unnamed-chunk-9-1.pdf}
 
 \hypertarget{variables-that-classify-the-best}{%
 \subsection{Variables that classify the
