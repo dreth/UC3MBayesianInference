@@ -9,4 +9,4 @@ My group mates for the assignments were:
 - [Javier Esteban Aragoneses](https://github.com/JavierEA1)
 - [Danyu Zhang](https://github.com/danyuz)
   
-The content and code shared in this repository is also theirs.
+**The content and code shared in this repository is also theirs.**
