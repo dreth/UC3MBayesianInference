@@ -5,7 +5,7 @@ This class was taught by [Stefano Cabras](http://portal.uc3m.es/portal/page/port
 
 My group mates for the assignments were:
 
-- Mauricio Marcos
+- [Mauricio Marcos](https://github.com/MauMau93)
 - [Javier Esteban Aragoneses](https://github.com/JavierEA1)
 - [Danyu Zhang](https://github.com/danyuz)
   
