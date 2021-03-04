@@ -18,30 +18,108 @@ options(JULIA_HOME = '/home/dreth/julia/bin')
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 library(dplyr)
 library(mlbench)
+library(UsingR)
+library(car)
 ```
 
 # Introduction
 
-This Dataset of Ozone is a dataset which contains 13 meteorological variables of , and in this work we will do i dont know, maybe a normal model. The  conclusions that we can get is that, if follows a normal  distribution and the a priori  distribution is i dont know, maybe gamma but i dont know. The distribution a posteriori is gamma? Perhaps 
+This Dataset of Ozone is a dataset which contains 13 meteorological variables of , and in this work we will do i dont know, maybe a normal model. The conclusions that we can get is that, if follows a normal distribution and the a priori distribution is i dont know, maybe gamma but i dont know. The distribution a posteriori is gamma? Perhaps 
 
-```{r, echo=TRUE, warning=FALSE, message=FALSE}
+Here we can see a preview of the dataset:
+
+\footnotesize
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 data(Ozone)
+head(Ozone)
 ```
 
-The dataset is originally obtained from: Leo  Breiman,  Department  of  Statistics,  UC  Berkeley.   Data  used  in  Leo  Breiman  and  JeromeH. Friedman (1985), Estimating optimal transformations for multiple regression and correlation,JASA, 80, pp. 580-598.
+\normalsize
 
-## Variable description
+The dataset is originally obtained from: Leo Breiman,  Department of Statistics, UC Berkeley. Data used in Leo Breiman and Jerome H. Friedman (1985), Estimating optimal transformations for multiple regression and correlation, JASA, 80, pp. 580-598.
 
+# Prior selection
 
+We select the prior mean $\mu = 0.07$ and prior standard deviation $\sigma = 0.05$ for several reasons:
 
+-  
 
-
+We select the values for $\upkappa_0 = 1$ and $\upupsilon_0 = 1$ given that we attribute less confidence to the $\sigma$ we've selected than to the $\mu$ we have have selected.
 
 # Codes 
 
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# prior
+mu0=0.07
+k0=1
+s20=0.05
+nu0=1
+```
+
+We perform a normality test and a generate a QQ-plot in order ot assess whether our data comes from a normal distribution or not.
+
+## Shapiro-Wilk normality test (Original data)
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# Normality tests (no transformation)
+shapiro.test(Ozone$V4)$p.value
+```
+
+## QQ-plot (Original data)
+
+```{r, echo=FALSE, warning=FALSE, message=FALS, fig.}
+car::qqPlot(Ozone$V4)
+```
+
+## Shapiro-Wilk normality test (Transformed data)
+
+We perform a *log* transformation to normalize the data.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# Normality test (after log transformation)
+lozone = log(Ozone$V4)
+shapiro.test(lozone)$p.value
+```
+
+## QQ-plot (Transformed data)
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+car::qqPlot(lozone)
+```
+
+# Data imputation
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# data
+n=length(Ozone$V4);ybar=mean(na.omit(Ozone$V4));s2=var(na.omit(Ozone$V4))
+# posterior inference
+kn=k0+n; nun=nu0+n
+mun=(k0*mu0+n*ybar)/kn
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+s2n=(nu0*s20+(n-1)*s2+k0*n*(ybar-mu0)^2/(kn))/(nun)
+```
+
+We apply the Monte Carlo method to approximate the marginal posterior. We then use these values and replace the NAs.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+s2.postsample=1/rgamma(10000,nun/2,s2n*nun/2)
+theta.postsample=rnorm(10000,mun,sqrt(s2.postsample/kn))
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+means <- c(); vars <- c(); vals <- c()
+for (i in 1:5) {
+    means <- c(means, mean(sample(theta.postsample)))
+    vars <- c(vars, mean(sample(s2.postsample, 10)))
+    vals <- c(vals, rnorm(1, mean=means[i], sd=sqrt(vars[i])))
+}
+Ozone$V4[is.na(Ozone$V4)] <- vals
+```
+
+
 
 # conclusions
-
-
-
 
