@@ -5,5 +5,6 @@
 *.fls
 *.synctex.gz
 Assignment 1/figures/*
-Assignment 3/figures/unnamed-chunk-5-1.pdf
-Assignment 3/figures/unnamed-chunk-7-1.pdf
+Assignment 3/figures/*
+Assignment 4/figures/*
+.gitignore
