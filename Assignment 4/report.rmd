@@ -5,6 +5,8 @@ date: 'March 18th, 2021'
 output: 'pdf_document'
 ---
 
+\small
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
 collapse = TRUE,
@@ -18,8 +20,7 @@ options(JULIA_HOME = '/home/dreth/julia/bin')
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(dplyr)
 library(rstan)
-library(shinystan)
-library(coda)
+library(stringr)
 ```
 
 # Introduction
@@ -30,19 +31,31 @@ In this Project, we intend to build and study a model to explain weather a costu
 
 In general, in Bayesian Logistic Regresion, you start with an initial belief about the distirbution of $p(\alpha, \beta) p (\alpha, \beta)$.
 
-Then $\p(\alpha, \beta | x, y) \propto p(y | \alpha, \beta, x) p (\alpha, \beta) p (\alpha, \beta | x, y) \propto p(y | \alpha, \beta, x) p(\alpha, \beta). That is, the posterior, which is our updated belief about the weights given evidence, is proportional to our prior (initial belief) times the likelihood. We can't evaluate the closed form posterior, bit can approximate it by sampling or variational methods. This gives us a distribution over the weights. Finally, we will get a distribution for the parameters and we will study the mean, variance, median and credible intervals.
+Then $p(\alpha, \beta  x, y) \propto p(y  \alpha, \beta, x) p (\alpha, \beta) p (\alpha, \beta  x, y) \propto p(y  \alpha, \beta, x) p(\alpha, \beta)$. That is, the posterior, which is our updated belief about the weights given evidence, is proportional to our prior (initial belief) times the likelihood. We can't evaluate the closed form posterior, bit can approximate it by sampling or variational methods. This gives us a distribution over the weights. Finally, we will get a distribution for the parameters and we will study the mean, variance, median and credible intervals.
 
-Our dependent variable “Y” is a random variable that distributes as a Bernoulli (it can take either value “1” if the costumer buys and “0” if the costumer does not buy). We will build a regression model, using as an independent variable "number of bets", that is a quantitative discrete variable. 
+Our dependent variable "Y" is a random variable that distributes as a Bernoulli (it can take either value "1" if the costumer buys and "0" if the costumer does not buy). We will build a regression model, using as an independent variable "number of bets", that is a quantitative discrete variable. 
 
-$$Y_i | p_i \overset{ind}{\ind} \text{Bernoulli}(p_i) \text{, } i = i, \dots, n.$$
+\footnotesize
 
-The logistic regression model writes that the logit of the probability p_i is a linear function of the predictor variable x_i:
+$$Y_i | p_i \overset{ind}{\sim} \text{Bernoulli}(p_i) \text{, } i = i, \dots, n.$$
+
+\small
+
+The logistic regression model writes that the logit of the probability p_i is a linear function of the predictor variable $x_i$:
+
+\footnotesize
 
 $$logit(p_i)=log({\frac{p_i}{1-p_i}})=\alpha+\beta X_i$$
 
-By rearranging the logistic regression equation, we can express it as a nonlinear equation of the probability of success p_i:
+\small
+
+By rearranging the logistic regression equation, we can express it as a nonlinear equation of the probability of success $p_i$:
+
+\footnotesize
 
 $$p_i = {\frac{e^{\alpha + \beta X_i}}{1 + e^{\alpha + \beta X_i}}}$$
+
+\small
 
 With this formula we can guarantee that the probability will lie in the interval [0,1].
 
@@ -58,43 +71,68 @@ As for any Bayesian inference exercise, we have 3 main parts that we can never a
 
 Here, the likelihood contribution from the ith subject is binomial:
 
+\footnotesize
+
 $$\text{likelihood}_i = p(x_i)^{y_i} (1 - p(x_i))^{(1 - y_i)}$$
 
-Where p(x_i) represents the probability of the event for subject I, which has covariate x_i and y_i indicates the presence, y_i = 1 or absence y_i=0 of the purchase for that subject. Of course, in logistic regression, we know that
+\small
 
-$$p(x) = \frac{e^{\alpha + \beta X}}{e^{\alpha + \beta X}}$$
+Where $p(x_i)$ represents the probability of the event for subject I, which has covariate $x_i$ and $y_i$ indicates the presence, $y_i = 1$ or absence $y_i=0$ of the purchase for that subject. Of course, in logistic regression, we know that
+
+\footnotesize
+
+$$p(x) = \frac{e^{\alpha + \beta X}}{1 + e^{\alpha + \beta X}}$$
+
+\small
 
 Rewritten as:
 
-$$\text{likelihood}_{i} = (\frac{e^{\alpha + \beta X}}{1 + e^{\alpha + \beta X}})^(y_{i}) (1 - \frac{e^{\alpha + \beta X}}{e^{\alpha + \beta X}})^(1-y_{i})$$
+\footnotesize
+
+$$\text{likelihood}_{i} = (\frac{e^{\alpha + \beta X}}{1 + e^{\alpha + \beta X}})^{(y_{i})} (1 - \frac{e^{\alpha + \beta X}}{1 + e^{\alpha + \beta X}})^{(1-y_{i})}$$
+
+\small
 
 And as the individual subjects are assumed independent from each other, the likelihood function over a data set of n subjects is:
 
+\footnotesize
+
 $$\text{likelihood} = \prod_{i=1}^n [ (\frac{e^{\alpha + \beta X}}{1 + e^{\alpha + \beta X}})^{y_i} (1 - \frac{e^{\alpha + \beta X}}{1 + e^{\alpha + \beta X}})^{(1 - y_{i})}$$
 
+\small
 
 ### Prior Distribution
 
-The set of unknown parameters are “alfa” and “beta”.
-In general, any prior distribution can be used, depending on the available prior information. Here, we will use two “common” priors (given by the professor):
+The set of unknown parameters are "alfa" and "beta".
+In general, any prior distribution can be used, depending on the available prior information. Here, we will use two "common" priors (given by the professor):
 
-$$\alpha \ind N(0,5)$$
-$$\beta \ind N(0,2)$$
+\footnotesize
+
+$$\alpha \sim N(0,5)$$
+$$\beta \sim N(0,2)$$
+
+\small
 
 ### Posterior distribution
 
 The posterior distribution is derived by multiplying the prior distribution over all parameters by the full likelihood function, so that:
 
+\footnotesize
+
 $$\begin{split} \text{posterior} = \prod_{i=1}^{n} [(\frac{e^{\alpha + \beta X}}{1 + e^{\alpha + \beta X}})^{y_i} (1 - \frac{e^{\alpha + \beta X}}{1 + e^{\alpha + \beta X}})^{(1 - y_i)}] \\
 \times \prod_{j=0}^p \frac{1}{\sqrt{2 \pi} \sigma_j} e^{- \frac{1}{2} (\frac{\beta_j - \mu_j}{\sigma_j})^{2}}
 \end{split}$$
 
-Where u_j and sigma_j are the already expressed mean and variance of the normal distribution for “alpha” and “beta”.
-Of course, the above expression has no closed form expression, and even if it did, we would have to perform multiple integration to obtain the marginal distribution for each coefficient. So we will use the Gibbs sampler as implemented in Stan, to solve approximate the properties of the marginal posterior distribution for “alpha” and “beta”.
+\small
+
+Where $u_j$ and $sigma_j$ are the already expressed mean and variance of the normal distribution for "alpha" and "beta".
+Of course, the above expression has no closed form expression, and even if it did, we would have to perform multiple integration to obtain the marginal distribution for each coefficient. So we will use the Gibbs sampler as implemented in Stan, to solve approximate the properties of the marginal posterior distribution for "alpha" and "beta".
+
+We can see that in 10000 iterations, only approximately 3300 are independent. However, all R are close to 1, in order words, if we try with different chains, the posterior probabilities will converge in the same way. So, we can trust the simulation.
 
 # Solution of the real problem
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
 m1 = "
 data {
 int N;
@@ -110,10 +148,6 @@ alpha ~ normal(0,5);
 beta ~ normal(0,2); 
 purchase ~ bernoulli_logit(alpha + beta * x);
 }
-generated quantities {
-  vector[N] y_pred;
-  y_pred <- beta * x;
-}
 "
 
 # data
@@ -121,45 +155,53 @@ y <- c(1,0,1,1,0,0)
 x <- c(3,5,2,5,10,6)
 df <- list(N = length(x), purchase = y, x = x)
 
-fit =« stan(model_code = m1, data = df, pars = c("beta","alpha","y_pred"), iter = 1e4)
-fit
+fit2 = stan(model_code = m1, data = df, pars = c("beta","alpha"), iter = 1e4)
 ```
-
-We can see that in 10000 iterations, only approximately 3300 are independent. However, all R are close to 1, in order words, if we try with different chains, the posterior probabilities will converge in the same way.So, we can trust the simulation.
 
 ## Posterior $\alpha$ and $\beta$ distribution
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-post_beta <- As.mcmc.list(fit, pars="beta")
-plot(post_beta)
+Given prior knowledge for $\alpha$ and $\beta$ (our coefficient parameters of the logistic regression) and the statistical models we used, the probability distribution of $\alpha$ (our intercept) and $\beta$ (our coefficient) are:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height=3}
+par(mfrow=c(1,2))
+post_alpha <- extract(fit2, pars="alpha")$alpha
+hist(post_alpha)
+post_beta <- extract(fit2, pars="beta")$beta
+hist(post_beta)
 ```
 
+$\beta$ has a distribution with $\mu = -1.12$ and $\epsilon = 0.01$. The mean of beta is between with a probability of 95%  :
+
+\tiny
+
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
-post_alpha <- As.mcmc.list(fit, pars="alpha")
-plot(post_alpha)
+quantile(extract(fit2,par="alpha")$alpha,c(0.025,0.975))
 ```
 
+\small
+
+So beta has a distribution with mean equal to -1.09 and  a standard error of 0.01. The mean of beta is with 95% of probability between:
+
+\tiny
+
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
-acf(extract(fit, 'beta')$beta)
-acf(extract(fit, 'alpha')$alpha)
+quantile(extract(fit2,par="beta")$beta,c(0.025,0.975))
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-plot(fit,pars=c("beta","alpha"))
+\small
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height=3}
+par(mfrow=c(1,2))
+acf(extract(fit2, 'beta')$beta, main="ACF for beta")
+acf(extract(fit2, 'alpha')$alpha, , main="ACF for alpha")
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-ypred=extract(fit,par="y_pred")[[1]]
-post.pred.mean=apply(ypred, 2, mean)
-post.pred.q025=apply(ypred, 2, quantile,p=0.025)
-post.pred.q975=apply(ypred, 2, quantile,p=0.975)
-rr=range(post.pred.mean,post.pred.q025,post.pred.q975)
-oo=order(y)
+Once the simulated values are found, one applies several diagnostic procedures to check if the simulation appears to converge to the posterior distribution. 
 
-plot(y[oo],post.pred.mean[oo],type="p",ylim=rr,xlim=rr,col=1,pch=19,cex=2,xlab="Observed",ylab="Predicted")
-lines(smooth.spline(x=y[oo],y=post.pred.q025[oo],spar = 0.5),col=2,lwd=2)
-lines(smooth.spline(x=y[oo],y=post.pred.q975[oo],spar = 0.5),col=2,lwd=2)
-abline(0,1,col=3,lwd=3,lty=2)
+From viewing these plots (for the regression parameters $\alpha$ and $\beta$),  it appears that there is a small amount of autocorrelation in the simulated draws and that the draws appear to have converged to the posterior distribution.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+plot(fit2,pars=c("beta","alpha"))
 ```
 
 # Annex: code
@@ -202,11 +244,11 @@ df <- list(N = length(x), purchase = purchase, x = x) # dataset setup
 fit <- stan(model_code = m1, data = df, pars = c("beta","alpha","y_pred"), iter = 1e4)
 
 # plotting posterior distribution of beta
-post_beta <- As.mcmc.list(fit, pars="beta")
+post_beta <- extract(fit, pars="beta")
 plot(post_beta)
 
 # plotting posterior distribution of alpha
-post_alpha <- As.mcmc.list(fit, pars="alpha")
+post_alpha <- extract(fit, pars="alpha")
 plot(post_alpha)
 
 # Autocorrelation plots for beta and alpha
@@ -215,17 +257,12 @@ acf(extract(fit, 'alpha')$alpha)
 
 # plotting beta and alpha
 plot(fit,pars=c("beta","alpha"))
+```
 
-# Plotting prediction
-ypred=extract(fit,par="y_pred")[[1]]
-post.pred.mean=apply(ypred, 2, mean)
-post.pred.q025=apply(ypred, 2, quantile,p=0.025)
-post.pred.q975=apply(ypred, 2, quantile,p=0.975)
-rr=range(post.pred.mean,post.pred.q025,post.pred.q975)
-oo=order(y)
+## Annex: summary stats for the fit
 
-plot(y[oo],post.pred.mean[oo],type="p",ylim=rr,xlim=rr,col=1,pch=19,cex=2,xlab="Observed",ylab="Predicted")
-lines(smooth.spline(x=y[oo],y=post.pred.q025[oo],spar = 0.5),col=2,lwd=2)
-lines(smooth.spline(x=y[oo],y=post.pred.q975[oo],spar = 0.5),col=2,lwd=2)
-abline(0,1,col=3,lwd=3,lty=2)
+Our summary statistics for the model are:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+fit2
 ```
