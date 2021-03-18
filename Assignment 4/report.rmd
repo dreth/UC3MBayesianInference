@@ -1,0 +1,48 @@
+---
+title: 'Logit Regression'
+author: 'Javier Esteban Aragoneses, Mauricio Marcos Fajgenbaun, Danyu Zhang, Daniel Alonso'
+date: 'March 18th, 2021'
+output: 'pdf_document'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+collapse = TRUE,
+comment = '#>',
+fig.path = './figures/'
+)
+knitr::knit_engines$set(julia = JuliaCall::eng_juliacall)
+options(JULIA_HOME = '/home/dreth/julia/bin')
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(rstan)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+m1 <- "
+data {                          
+int<lower=0> N;                    # number of observations
+int<lower=0,upper=1> purchase[N];  # setting the dependent variable (vote) as binary
+vector[N] x;                       # independent variable 1
+}
+parameters {
+real alpha;                        # intercept
+real beta;                         # beta for educate, etc
+}
+model {
+alpha ~ normal(0,5);                             # you can set priors for all betas
+beta ~ normal(0,2);                              # if you prefer not to, uniform priors will be used
+purchase ~ bernoulli_logit(alpha + beta * x);    # model
+}
+generated quantities {                           # simulate quantities of interest
+real y_hat;                                      # create a new variable for the predicted values
+y_hat <- inv_logit(alpha + beta * x);            # model
+}
+"
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+
+```
