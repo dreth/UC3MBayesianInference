@@ -23,11 +23,11 @@ library(rstan)
 library(stringr)
 ```
 
-# Introduction
+## Introduction
 
 In this Project, we intend to build and study a model to explain weather a costumer will do a certain purchase or not. In order to do this, we will try to explain this decision (either purchasing or not purchasing) by the number of bets that the person does in a well-known website. With this, we may be able to predict if a person will buy or not, depending on the numer of bets already mentioned.
 
-# Model
+## Model
 
 In general, in Bayesian Logistic Regresion, you start with an initial belief about the distirbution of $p(\alpha, \beta) p (\alpha, \beta)$.
 
@@ -67,7 +67,7 @@ As for any Bayesian inference exercise, we have 3 main parts that we can never a
 
 - Use Bayes theorem to find the posterior distribution over all parameters 
 
-## Likelihood Function 
+#### Likelihood Function 
 
 Here, the likelihood contribution from the ith subject is binomial:
 
@@ -101,7 +101,7 @@ $$\text{likelihood} = \prod_{i=1}^n [ (\frac{e^{\alpha + \beta X}}{1 + e^{\alpha
 
 \small
 
-### Prior Distribution
+#### Prior Distribution
 
 The set of unknown parameters are "alfa" and "beta".
 In general, any prior distribution can be used, depending on the available prior information. Here, we will use two "common" priors (given by the professor):
@@ -113,7 +113,7 @@ $$\beta \sim N(0,2)$$
 
 \small
 
-### Posterior distribution
+#### Posterior distribution
 
 The posterior distribution is derived by multiplying the prior distribution over all parameters by the full likelihood function, so that:
 
@@ -130,7 +130,7 @@ Of course, the above expression has no closed form expression, and even if it di
 
 We can see that in 10000 iterations, only approximately 3300 are independent. However, all R are close to 1, in order words, if we try with different chains, the posterior probabilities will converge in the same way. So, we can trust the simulation.
 
-# Solution of the real problem
+## Solution of the real problem
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
 m1 = "
@@ -158,19 +158,11 @@ df <- list(N = length(x), purchase = y, x = x)
 fit2 = stan(model_code = m1, data = df, pars = c("beta","alpha"), iter = 1e4)
 ```
 
-## Posterior $\alpha$ and $\beta$ distribution
+### Posterior $\alpha$ and $\beta$ distribution
 
 Given prior knowledge for $\alpha$ and $\beta$ (our coefficient parameters of the logistic regression) and the statistical models we used, the probability distribution of $\alpha$ (our intercept) and $\beta$ (our coefficient) are:
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height=3}
-par(mfrow=c(1,2))
-post_alpha <- extract(fit2, pars="alpha")$alpha
-hist(post_alpha)
-post_beta <- extract(fit2, pars="beta")$beta
-hist(post_beta)
-```
-
-$\beta$ has a distribution with $\mu = -1.12$ and $\epsilon = 0.01$. The mean of beta is between with a probability of 95%  :
+$\beta$ has a distribution with $\mu = -1.11$ and $\epsilon = 0.01$. $\mu_{\beta}$ is between with a probability of 95%:
 
 \tiny
 
@@ -180,7 +172,7 @@ quantile(extract(fit2,par="alpha")$alpha,c(0.025,0.975))
 
 \small
 
-So beta has a distribution with mean equal to -1.09 and  a standard error of 0.01. The mean of beta is with 95% of probability between:
+$\alpha$ has a distribution with $\mu = 5.12$  and $\epsilon = 0.05$. $\mu_{\alpha}$ is between with a probability of 95%:
 
 \tiny
 
@@ -190,21 +182,13 @@ quantile(extract(fit2,par="beta")$beta,c(0.025,0.975))
 
 \small
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height=3}
-par(mfrow=c(1,2))
-acf(extract(fit2, 'beta')$beta, main="ACF for beta")
-acf(extract(fit2, 'alpha')$alpha, , main="ACF for alpha")
-```
-
 Once the simulated values are found, one applies several diagnostic procedures to check if the simulation appears to converge to the posterior distribution. 
 
 From viewing these plots (for the regression parameters $\alpha$ and $\beta$),  it appears that there is a small amount of autocorrelation in the simulated draws and that the draws appear to have converged to the posterior distribution.
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-plot(fit2,pars=c("beta","alpha"))
-```
+\newpage
 
-# Annex: code
+# Annex: commented code
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
 # Importing libraries
@@ -265,4 +249,23 @@ Our summary statistics for the model are:
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 fit2
+```
+
+## Annex: plot for beta and alpha summary
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+plot(fit2,pars=c("beta","alpha"))
+```
+
+## Annex: histograms and ACF plots for $\beta$ and $\alpha$
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width=7, fig.height=6}
+par(mfrow=c(2,2))
+post_alpha <- extract(fit2, pars="alpha")$alpha
+hist(post_alpha)
+post_beta <- extract(fit2, pars="beta")$beta
+hist(post_beta)
+acf(extract(fit2, 'beta')$beta, main="ACF for beta")
+acf(extract(fit2, 'alpha')$alpha, , main="ACF for alpha")
 ```
