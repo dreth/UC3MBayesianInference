@@ -125,8 +125,8 @@ $$\begin{split} \text{posterior} = \prod_{i=1}^{n} [(\frac{e^{\alpha + \beta X}}
 
 \small
 
-Where $u_j$ and $sigma_j$ are the already expressed mean and variance of the normal distribution for "alpha" and "beta".
-Of course, the above expression has no closed form expression, and even if it did, we would have to perform multiple integration to obtain the marginal distribution for each coefficient. So we will use the Gibbs sampler as implemented in Stan, to solve approximate the properties of the marginal posterior distribution for "alpha" and "beta".
+Where $u_j$ and $sigma_j$ are the already expressed mean and variance of the normal distribution for $\alpha$ and $\beta$.
+Of course, the above expression has no closed form expression, and even if it did, we would have to perform multiple integration to obtain the marginal distribution for each coefficient. So we will use the Hamiltonian montecarlo as implemented in Stan, to solve approximate the properties of the marginal posterior distribution for $\alpha$ and $\beta$.
 
 We can see that in 10000 iterations, only approximately 3300 are independent. However, all R are close to 1, in order words, if we try with different chains, the posterior probabilities will converge in the same way. So, we can trust the simulation.
 
