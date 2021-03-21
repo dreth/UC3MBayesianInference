@@ -1,0 +1,95 @@
+---
+title: 'Logit Regression'
+author: 'Javier Esteban Aragoneses, Mauricio Marcos Fajgenbaun, Danyu Zhang, Daniel Alonso'
+date: 'March 21th, 2021'
+output: 
+  pdf_document:
+    extra_dependencies: ["mathtools"]
+---
+
+\small
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+collapse = TRUE,
+comment = '#>',
+fig.path = './figures/'
+)
+knitr::knit_engines$set(julia = JuliaCall::eng_juliacall)
+options(JULIA_HOME = '/home/dreth/julia/bin')
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(stringr)
+library(BayesVarSel)
+library(ggplot2)
+```
+
+## Introduction
+
+The objective of this research is to obtain the best model to predict concentration of protein in blood utilizing genetic SNP data from 100 individuals.
+
+## Model
+Vamos a estudiar el mejor modelo posible primero teniendo en cuenta que las variabkes son factores y después siendo variables numéricas. Los modelos lineales serian , si tuviesemos solo una variabkle de tres niveles:
+
+Modelo factor:
+
+y=b0 + bfactor1+ b2factor
+
+siendo b0 el el valor de cuando factor tiene como valor el primer nivel 
+Modelo Numerico:
+y=b0 +bvariable1
+
+To know what the best models are, we use a Robust prior, this is a prior of the form:
+
+$$\begin{split} \pi_i^{R} (\beta_0, \beta_i, \sigma) = \pi(\beta_0, \sigma) \times \pi_i^{R} (\beta_i | \beta_0, \sigma) \\
+= \sigma^{-1} \times \int_0^{\infty} \nu_{k_i} (\beta_i | 0, \Sigma_i) p_i^{R} (g) dg \end{split}$$
+
+We have chosen this specific prior because its importance is limited. Given a scenario where we have a conflict between the data and the prior, a robust prior gives us significant flexibility when attempting to solve this conflict by attributing more importance to the data. 
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+gen <- read.csv("gendata.csv",header = TRUE,sep=";",row.names = 1)
+gen$conc <- log(gen$conc)
+for (i in 1:(length(names))) {gen[,i] <- as.numeric(gen[,i])}
+factor_model <- Bvs(formula= conc ~ ., data=gen, prior.betas = "Robust")
+```
+
+
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+gen <- read.csv("gendata.csv",header = TRUE,sep=";",row.names = 1)
+for (i in 1:(length(names))) {gen[,i] <- as.factor(gen[,i])}
+gen$conc <- log(as.numeric(gen$conc))
+numeric_model <- Bvs(formula= conc ~ ., data=gen, prior.betas = "Robust")
+```
+
+
+#From the histogram of factor model, we can observe that #rve that 
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 8, fig.height = 4}
+plot(factor_model, option="dimension")
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, fig.width = 8, fig.height = 4}
+plot(numeric_model, option="dimension")
+```
+
+![Best models for predictors as factors](factor.png)
+
+![Best models for predictors as continuous values](numeric.png)
+
+Models which use predictors of factor type tend to explain better than numeric types models. The reason for this is the fact that the distance between the different values of the genetic profiles are the same. Which means that, for instance, if we use it as quantitative variable, the distance between 1-3 will be larger than 1-1.
+
+As a result, our chosen model is our model which uses factors:
+
+
+
+
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+# step(lm(formula= conc ~ ., data=gen), k = log(nrow(gen)))
+```

@@ -29,7 +29,7 @@ In this Project, we intend to build and study a model to explain weather a costu
 
 ## Model
 
-In general, in Bayesian Logistic Regresion, you start with an initial belief about the distirbution of $p(\alpha, \beta) p (\alpha, \beta)$.
+In general, in Bayesian Logistic Regresion, you start with an initial belief about the distribution of $p(\alpha, \beta) p (\alpha, \beta)$.
 
 Then $p(\alpha, \beta  x, y) \propto p(y  \alpha, \beta, x) p (\alpha, \beta) p (\alpha, \beta  x, y) \propto p(y  \alpha, \beta, x) p(\alpha, \beta)$. That is, the posterior, which is our updated belief about the weights given evidence, is proportional to our prior (initial belief) times the likelihood. We can't evaluate the closed form posterior, bit can approximate it by sampling or variational methods. This gives us a distribution over the weights. Finally, we will get a distribution for the parameters and we will study the mean, variance, median and credible intervals.
 
