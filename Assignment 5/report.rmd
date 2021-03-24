@@ -79,6 +79,8 @@ $$\begin{split} \pi_i^{R} (\beta_0, \beta_i, \sigma) & = \pi(\beta_0, \sigma) \t
 
 We have chosen this specific prior because its importance is limited. Given a scenario where we have a conflict between the data and the prior, a robust prior gives us significant flexibility when attempting to solve this conflict by attributing more importance to the data. 
 
+\newpage
+
 # Results
 
 Models which use predictors of factor type tend to explain better than numeric types models. The reason for this is the fact that the distance between the different values of the genetic profiles are the same. Which means that, for instance, if we use it as quantitative variable, the distance between 1-3 will be larger than 1-1.
