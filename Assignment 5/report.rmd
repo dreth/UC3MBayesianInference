@@ -97,10 +97,6 @@ The posterior dimension probabilities of our model using factors as predictors a
 plot(factor_model, option="dimension")
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width = 8, fig.height = 4}
-plot(numeric_model, option="dimension")
-```
-
 \newpage
 
 # Annex: Code and plots
