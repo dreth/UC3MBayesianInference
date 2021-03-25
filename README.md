@@ -1,12 +1,15 @@
 # UC3MBayesianInference
-projects and stuff done for my bayesian inference in UC3M
 
-This class was taught by [Stefano Cabras](http://portal.uc3m.es/portal/page/portal/dpto_estadistica/personal/Stefano_Cabras)
+Homeworks and projects done for our bayesian inference class taken at UC3M
 
-My group mates for the assignments were:
+All the projects in this repo have been jointly authored by:
 
 - [Mauricio Marcos](https://github.com/MauMau93)
 - [Javier Esteban Aragoneses](https://github.com/JavierEA1)
 - [Danyu Zhang](https://github.com/danyuz)
-  
-**The content and code shared in this repository is also theirs.**
+- [Daniel A.](https://github.com/dreth)
+
+The lecturer for this class was [Stefano Cabras](https://portal.uc3m.es/portal/page/portal/dpto_estadistica/personal/Stefano_Cabras)
+
+
+
