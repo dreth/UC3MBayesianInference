@@ -1,4 +1,4 @@
-# UC3MBayesianInference
+# Bayesian Inference (UC3M)
 
 Homeworks and projects done for our bayesian inference class taken at UC3M
 
